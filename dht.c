@@ -1,4 +1,4 @@
-#define F_CPU 16000000UL
+
 #define DHT11_PIN PINC0
 #include "dht.h"
 

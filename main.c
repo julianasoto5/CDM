@@ -1,39 +1,47 @@
 #define F_CPU 16000000UL
+#define DHT11_PIN PINC0
 #include <avr/io.h>
 #include <util/delay.h>
-
-void UART_init(uint16_t baud_rate) {
-    // Configuración de la UART con baud_rate proporcionado
-    uint16_t ubrr_value = F_CPU / (16 * baud_rate) - 1;
-    UBRR0H = (uint8_t)(ubrr_value >> 8);
-    UBRR0L = (uint8_t)ubrr_value;
-    UCSR0B = (1 << TXEN0) | (1 << RXEN0);  // Habilitar transmisión y recepción
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00); // Modo asíncrono, sin paridad, 1 bit de parada, 8 bits de datos
-}
-
-void UART_transmit_char(uint8_t data) {
-    // Esperar a que el buffer de transmisión esté vacío
-    while (!(UCSR0A & (1 << UDRE0)));
-    // Colocar el dato en el registro de datos
-    UDR0 = data;
-}
-
+#include <stdio.h>
+#include "UART.h"
+#include "dht.h"
+#include "RTC.h"
+ 
 int main(void) {
-    // Inicializar UART con baud rate de 9600
-    UART_init(9600);
+    UART_init(0x67); // baud rate calculado para 9600 bps
+    DHT11_start();
+    rtc_init();
 
-    // Mensaje a enviar
-    const char* message = "Hola desde AVR!\n\r";
+    // Variables para almacenar los datos de humedad y temperatura
+    char hum[6];
+    char temp[6];
 
-    // Bucle infinito
+    uint8_t year, month, day, hour, minute, second;
     while (1) {
-        // Enviar cada caracter del mensaje
-        for (const char* ptr = message; *ptr != '\0'; ptr++) {
-            UART_transmit_char(*ptr);
-            // Esperar un poco para que sea visible en la terminal virtual
-            _delay_ms(50);
-        }
-        // Esperar un poco antes de enviar el mensaje de nuevo
+        rtc_get_datetime(&year, &month, &day, &hour, &minute, &second);
+		
+        // Formatear la fecha y hora
+        char fecha_hora[30];
+        sprintf(fecha_hora, "Fecha: %02d/%02d/%02d Hora: %02d:%02d:%02d\n", day, month, year, hour, minute, second);
+        // Transmitir la fecha y hora por UART
+        UART_transmit_string(fecha_hora);
+        
+		UART_transmit_string("\n\r");
+        // Leer los valores de humedad y temperatura del DHT11
+        DHT11_read_data(hum, temp);
+        // Transmitir los valores de humedad y temperatura por UART
+        UART_transmit_string("Humedad: ");
+        UART_transmit_string(hum);
+        UART_transmit_string("%\n\r");
+
+        UART_transmit_string("Temperatura: ");
+        UART_transmit_string(temp);
+        UART_transmit_string("C\n\r");
+
+        // Esperar un segundo antes de la próxima lectura
         _delay_ms(1000);
     }
+
+    return 0;
 }
+

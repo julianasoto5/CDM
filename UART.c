@@ -1,10 +1,5 @@
-/*
- * CFile1.c
- *
- * Created: 23/6/2022 23:41:09
- *  Author: Fran
- */ 
-/*#include "UART.h"
+
+#include "UART.h"
 #include "dht.h"
 #include "menu.h"
 
@@ -19,22 +14,30 @@ char hum [5];
 char temp [5];
 
 
-void UART_init(uint8_t config)
-{
-	//Configura la UART 9600bps, 8 bit data
-	UCSR0B = 0;
-	UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);
-	UBRR0H = (unsigned char)(config>>8);
-	UBRR0L = (unsigned char)config;
-	UCSR0B |= (1<<TXEN0); //Activa la UART para transmision
-	UCSR0B |= (1<<RXEN0); //Activa la UART para recepcion
-	UCSR0B |= (1<<RXCIE0); //Activa las interrupciones de recepcion
-	TCCR1B |= (1 << WGM12);				// Modo CTC con OCR1A
-	TCCR1B |= (1 << CS12);				// Prescaler = F_CPU/256
-	OCR1A = 3125;						// seteo el contador en 3125
-	TIMSK1 |= (1 << OCIE1A);			// habilito interrupci n del contador OCR1A
-	sei();
+void UART_init(uint16_t ubrr_value) {
+	// Configuración de baud rate
+	UBRR0H = (uint8_t)(ubrr_value >> 8); // Parte alta del UBRR
+	UBRR0L = (uint8_t)ubrr_value;        // Parte baja del UBRR
+	// Habilitar transmisión y recepción
+	UCSR0B = (1 << TXEN0) | (1 << RXEN0);
+	// Configuración: 8 bits de datos, sin paridad, 1 bit de parada
+	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 }
+
+void UART_transmit_char(uint8_t data) {
+	// Esperar a que el buffer de transmisión esté vacío
+	while (!(UCSR0A & (1 << UDRE0)));
+	// Colocar el dato en el registro de datos
+	UDR0 = data;
+}
+
+void UART_transmit_string(const char* str) {
+	while (*str) {
+		UART_transmit_char(*str++);
+	}
+}
+
+/*
 
 void UART_TX_Interrupt_Enable(void) //Funcion que activa las interrupciones de transmision de la UART
 {
@@ -44,37 +47,6 @@ void UART_TX_Interrupt_Enable(void) //Funcion que activa las interrupciones de t
 void UART_TX_Interrupt_Disable(void) //Funcion que desactiva las interrupciones de transmision de la UART
 {
 	UCSR0B &=~(1<<UDRIE0);
-}
-
-void UART_write_char_buffer(uint8_t caracter) //Funcion que recibe un caracter para escribir en el buffer de transmision
-{
-	if ((indiceTX_escritura+1)%TX_BUFFER_LENGHT!=indiceTX_lectura) //Si el indice de escritura no se paso del tamaño del buffer
-	{
-		BUFFER_TX[indiceTX_escritura]= caracter; //Guarda el caracter en el buffer
-		indiceTX_escritura= (indiceTX_escritura+1)%(TX_BUFFER_LENGHT); //Incrementa el indice o resetea en el caso de llegar a la ultima posicion
-	}
-	else
-	{
-		//ERROR el buffer esta lleno
-	}
-}
-
-void UART_write_string_buffer(uint8_t * cadena)
-{
-	uint8_t i;
-	for (i=0;cadena[i]!='\0';i++)//Itera la cadena caracter a caracter
-	{
-		UART_write_char_buffer(cadena[i]); //Llama a la funcion que escribe un caracter mandando el caracter
-	}
-}
-
-void UART_get_string_from_buffer(uint8_t * cadena) //Funcion que retorna la cadena leida en la variable cadena
-{
-	uint8_t i;
-	for (i=0;BUFFER_RX[i]!='\0';i++) //Itera el buffer de recepcion hasta que encuentre un valor vacio ('\0')
-	{
-		cadena[i]= BUFFER_RX[i]; //Guarda caracter a caracter en la variable cadena
-	}
 }
 
 void SEOS_Schedule_Tasks(void)
@@ -87,12 +59,19 @@ void SEOS_Schedule_Tasks(void)
 
 
 void SEOS_Dispatch_Tasks (void) {
-	if ((flag_hora)&&(imprimo_flag())) {
-		DHT11_read_data(hum,temp);
-		UART_write_string_buffer((uint8_t*)hum);
-		UART_write_string_buffer("\n\r");
-		UART_write_string_buffer((uint8_t*)temp);
-		UART_write_string_buffer("\n\r");
+	if (flag_hora) {
+		// Leer datos del DHT11
+		    DHT11_read_data(hum, temp);
+			// Transmitir los valores de humedad y temperatura
+			
+			UART_transmit_string("Humedad: ");
+			UART_transmit_string(hum);
+			UART_transmit_string("%\n\r");
+
+			UART_transmit_string("Temperatura: ");
+			UART_transmit_string(temp);
+			UART_transmit_string("C\n\r");
+
 		UART_TX_Interrupt_Enable();
 		flag_hora = 0;
 	}
@@ -101,7 +80,7 @@ void SEOS_Dispatch_Tasks (void) {
 ISR(USART_RX_vect){
 	static uint8_t i = 0;
 	BUFFER_RX[i] = UDR0;
-	if (BUFFER_RX[i]=='m') //Si el valor guardado es un ENTER
+	if (BUFFER_RX[i]=='r') //Si el valor guardado es un ENTER
 	{
 		BUFFER_RX[i]= '\0'; //Remplaza el valor por un vacio '\0'
 		se_apreto_enter= 1; //Activa el flag de que se apreto ENTER
@@ -141,4 +120,5 @@ uint8_t get_se_apreto_enter(void) //Esta funcion devuelve el valor del flag de s
 void set_se_apreto_enter(uint8_t valor) //Esta funcion setea el valor del flag de si se apreto ENTER por el valor pasado en la funcion
 {
 	se_apreto_enter= valor;
-}*/
+}
+*/

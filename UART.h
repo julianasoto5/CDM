@@ -8,7 +8,7 @@
 #define RX_BUFFER_LENGHT 6
 #define TX_BUFFER_LENGHT 200
 
-void UART_init(uint8_t config);
+void UART_init(uint16_t ubrr_value);
 void UART_TX_Interrupt_Disable(void);
 void UART_TX_Interrupt_Enable(void);
 void UART_write_char_buffer(uint8_t caracter);
