@@ -1,68 +1,65 @@
-#include "rtc.h"
-#include <avr/io.h>
-#include <util/delay.h>
 
-// Dirección I2C del RTC DS3231
-#define DS3231_ADDR 0b1101000
+#include "RTC.h"
+#include "I2C.h"
+#define DS3231_I2C_ADDRESS 0x68
 
-// Función para inicializar la comunicación I2C
-void i2c_init() {
-    // Configurar los registros TWBR y TWSR para establecer la velocidad de comunicación
-    // Por ejemplo, para una frecuencia de reloj de 16MHz y una velocidad de 100kHz:
-    TWBR = 72;  // Fórmula: TWBR = ((F_CPU / F_SCL) - 16) / (2 * Prescaler)
-    TWSR &= ~(1 << TWPS0) & ~(1 << TWPS1);  // Prescaler = 1 (fórmula de prescaler)
+uint8_t decToBcd(uint8_t val) {
+    return ( (val/10*16) + (val%10) );
 }
 
-// Función para iniciar una transmisión en el bus I2C
-void i2c_start() {
-    TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN); // Iniciar la condición de inicio
-    while (!(TWCR & (1 << TWINT))); // Esperar a que se complete la condición de inicio
+uint8_t bcdToDec(uint8_t val) {
+    return ( (val/16*10) + (val%16) );
 }
 
-// Función para enviar un byte en el bus I2C
-void i2c_write(uint8_t data) {
-    TWDR = data; // Cargar el dato en el registro de datos
-    TWCR = (1 << TWINT) | (1 << TWEN); // Iniciar la transmisión del dato
-    while (!(TWCR & (1 << TWINT))); // Esperar a que se complete la transmisión
-}
-
-// Función para detener la transmisión en el bus I2C
-void i2c_stop() {
-    TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN); // Iniciar la condición de parada
-    while ((TWCR & (1 << TWSTO))); // Esperar a que se complete la condición de parada
-}
-
-// Función para leer un byte del bus I2C
-uint8_t i2c_read(uint8_t ack) {
-    TWCR = (1 << TWINT) | (1 << TWEN) | (ack ? (1 << TWEA) : 0); // Habilitar la recepción, enviar ACK o NACK
-    while (!(TWCR & (1 << TWINT))); // Esperar a que se complete la recepción
-    return TWDR; // Leer el dato recibido
-}
-
-void rtc_init() {
-    // Inicializar la comunicación I2C
-    i2c_init();
-}
-
-void rtc_get_datetime(uint8_t *year, uint8_t *month, uint8_t *day, uint8_t *hour, uint8_t *minute, uint8_t *second) {
-    // Iniciar una transmisión I2C
+uint8_t isRtcRunning(void) {
+    uint8_t status;
     i2c_start();
-    // Enviar la dirección del RTC DS3231 en modo escritura
-    i2c_write(DS3231_ADDR << 1 | 0); // Bit de dirección (R/W = 0)
-    // Enviar la dirección del registro de segundos
-    i2c_write(0x00);
-    // Reiniciar la transmisión I2C
-    i2c_start();
-    // Enviar la dirección del RTC DS3231 en modo lectura
-    i2c_write(DS3231_ADDR << 1 | 1); // Bit de dirección (R/W = 1)
-    // Leer los datos del RTC
-    *second = i2c_read(1);  // Leer los segundos
-    *minute = i2c_read(1);  // Leer los minutos
-    *hour = i2c_read(1);    // Leer las horas
-    i2c_read(1);            // Leer el día de la semana (no utilizado)
-    *day = i2c_read(1);     // Leer el día
-    *month = i2c_read(1);   // Leer el mes
-    *year = i2c_read(0);    // Leer el año
-    // Detener la transmisión I2C
+    i2c_write((DS3231_I2C_ADDRESS << 1) | 0); // Dirección de escritura
+    i2c_write(0x0F); // Dirección del registro de estado
     i2c_stop();
+    i2c_start();
+    i2c_write((DS3231_I2C_ADDRESS << 1) | 1); // Dirección de lectura
+    status = i2c_read_nack();
+    i2c_stop();
+
+    return !(status & 0x80); // Si el bit OSF (Oscillator Stop Flag) está bajo, el RTC está corriendo
+}
+
+void setDateTime(uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
+    i2c_start();
+    i2c_write((DS3231_I2C_ADDRESS << 1) | 0); // Dirección de escritura
+    i2c_write(0); // Comienza en la dirección 0x00
+    i2c_write(decToBcd(second));
+    i2c_write(decToBcd(minute));
+    i2c_write(decToBcd(hour));
+    i2c_write(0); // Día de la semana (no se usa)
+    i2c_write(decToBcd(day));
+    i2c_write(decToBcd(month));
+    i2c_write(decToBcd(year));
+    i2c_stop();
+}
+
+void getDateTime(uint8_t *year, uint8_t *month, uint8_t *day, uint8_t *hour, uint8_t *minute, uint8_t *second) {
+    i2c_start();
+    i2c_write((DS3231_I2C_ADDRESS << 1) | 0); // Dirección de escritura
+    i2c_write(0); // Comienza en la dirección 0x00
+    i2c_stop();
+    i2c_start();
+    i2c_write((DS3231_I2C_ADDRESS << 1) | 1); // Dirección de lectura
+    *second = bcdToDec(i2c_read_ack());
+    *minute = bcdToDec(i2c_read_ack());
+    *hour = bcdToDec(i2c_read_ack());
+    i2c_read_ack(); // Día de la semana (no se usa)
+    *day = bcdToDec(i2c_read_ack());
+    *month = bcdToDec(i2c_read_ack());
+    *year = bcdToDec(i2c_read_nack());
+    i2c_stop();
+}
+
+void setup() {
+    // Verificar si el RTC está corriendo
+    if (!isRtcRunning()) {
+        // Configurar la fecha y hora iniciales
+        setDateTime(24, 6, 9, 22, 7, 0); // Configuración inicial
+    }
 }
