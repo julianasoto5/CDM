@@ -17,5 +17,6 @@ void UART_get_string_from_buffer(uint8_t* cadena);
 uint8_t get_se_apreto_enter(void);
 void set_se_apreto_enter(uint8_t valor);
 void SEOS_Dispatch_Tasks (void);
+void UART_transmit_char(uint8_t);
 
 #endif
