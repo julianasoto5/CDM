@@ -21,7 +21,8 @@ ISR (TIMER1_COMPA_vect){ //cada medio segundo
 
 
 void SEOS_Scheduler_Tasks(){
-	if (++contDHT == 4){ //si el timer es de 0.5 segundos, a la 4 interrupcion llega a los 2 segundos
+	contDHT++;
+	if (contDHT == CANT_INT_DHT){ //si el timer es de 0.5 segundos, a la 4 interrupcion llega a los 2 segundos
 		Flag_DHT = 1;
 		contDHT = 0;
 	}

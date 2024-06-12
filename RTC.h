@@ -1,8 +1,8 @@
 #ifndef RTC_H
 #define RTC_H
-#define F_CPU 16000000UL
+
 #include <avr/io.h>
-#include <util/delay.h>
+#include "lib_delay.h"
 
 //inicializar
 void RTC_setup();

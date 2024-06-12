@@ -8,7 +8,8 @@
 #include "RTC.h"
 
 
-#define T 0.5
+#define T 1
+#define CANT_INT_DHT 1 //CANT_INT * T = Periodo querido -> 4*0.5s = 2s
 #define PREESCALER 256
 
 #define CTC_OCR1A ((F_CPU*T/PREESCALER)-1) 

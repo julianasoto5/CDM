@@ -34,7 +34,7 @@ void UART_TX_Enable(){
 
 void UART_transmit_string(char* str) {
 	uint8_t i=0;
-	
+	BUFFER_TX[i] = str[i++];
 	SerialPort_TX_Interrupt_Enable();
 	while(str[i] != '\0' && i < BUFFER_SIZE){
 		BUFFER_TX[i] = str[i];
