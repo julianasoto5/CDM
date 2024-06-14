@@ -148,10 +148,19 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="dht.c">
+    <Compile Include="DHT11.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="dht.h">
+    <Compile Include="DHT11.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="I2C.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="I2C.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="lib_delay.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
@@ -160,16 +169,16 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="menu.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="menu.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="RTC.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="RTC.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SEOS.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SEOS.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="serialPort.c">
