@@ -46,8 +46,7 @@ void updateTerminal(){
 	char temp[6];
 
 	uint8_t year, month, day, hour, minute, second;
-	RTC_getDateTime(&year, &month, &day, &hour, &minute, &second);
-	        
+	RTC_getDateTime(&year, &month, &day, &hour, &minute, &second);      
 	        
 	sprintf(resultado, "Fecha: %02d/%02d/%02d Hora: %02d:%02d:%02d\n\r", day, month, year, hour, minute, second);
 	        
@@ -67,7 +66,7 @@ void updateTerminal(){
 	//UART_transmit_string(temp);
 	strcat(resultado,temp);
 	//UART_transmit_string("C\n\r");
-	strcat(resultado,"C\n\r");
+	strcat(resultado,"C\n\r\r");
 	        
 	// Transmision por UART
 	UART_transmit_string(resultado);

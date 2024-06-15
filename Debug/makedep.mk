@@ -2,13 +2,15 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-dht.c
+DHT11.c
+
+I2C.c
 
 main.c
 
-menu.c
-
 RTC.c
+
+SEOS.c
 
 serialPort.c
 

@@ -59,6 +59,6 @@ void RTC_getDateTime(uint8_t *year, uint8_t *month, uint8_t *day, uint8_t *hour,
 void RTC_setup() {
     // Verificar si el RTC está corriendo
         // Configurar la fecha y hora iniciales
-        RTC_setDateTime(24, 6, 9, 22, 7, 0); // Configuración inicial
+        RTC_setDateTime(24, 6, 14, 22, 12, 0); // Configuración inicial
     
 }

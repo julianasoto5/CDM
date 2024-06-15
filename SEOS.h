@@ -6,10 +6,11 @@
 #include <avr/interrupt.h>
 #include <string.h>
 #include "RTC.h"
+#include "DHT11.h"
 
 
 #define T 1
-#define CANT_INT_DHT 1 //CANT_INT * T = Periodo querido -> 4*0.5s = 2s
+#define CANT_INT_DHT 2 //CANT_INT * T = Periodo deseado -> 4*0.5s = 2s
 #define PREESCALER 256
 
 #define CTC_OCR1A ((F_CPU*T/PREESCALER)-1) 
