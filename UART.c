@@ -5,7 +5,6 @@
 static volatile char BUFFER_TX [BUFFER_SIZE];
 static uint8_t TX_enabled = 0; //desactivado
 
-
 void UART_init(uint16_t ubrr_value) {
 	
 	// Configuración de baud rate
@@ -46,8 +45,8 @@ void UART_transmit_string(char* str) {
 
 
 // Manjeador de interrupciones de buffer vacio -> cuando interrumpe tiene que mandar mas datos para transmitir (asignar a UDR0)
-ISR(USART_UDRE_vect){ //Interrupcion de que se puede transmitir en la UART
-	
+void UART_Transmition_Allowed(){
+		
 	static uint8_t i=0;
 	if (BUFFER_TX[i] != '\0'){
 		UDR0 = BUFFER_TX[i];
@@ -61,8 +60,8 @@ ISR(USART_UDRE_vect){ //Interrupcion de que se puede transmitir en la UART
 	}
 }
 
+void UART_Reception_Detected(){
 //Manejo de interrupciones de lectura terminada
-ISR(USART_RX_vect){
 	char data = SerialPort_Recive_Data(); //Leo caracter desde el registro de datos del UART
 	
 	if (data=='s' || data=='S'){

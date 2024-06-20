@@ -1,29 +1,45 @@
 
 #include "SEOS.h"
 
-volatile unsigned char Flag_DHT = 0; //cada 2 segundos
+#define T 1
+#define CANT_INT_DHT 2 //CANT_INT * T = Periodo deseado -> 2*1s = 2s
+#define PREESCALER 256
+//Al final si se puede hacer de 2 segundos jaja -> T = 2 y PREESCALER = 1024 --> OCR1A = 31249 que si entra en 16 bits.
+
+#define CTC_OCR1A ((F_CPU*T/PREESCALER)-1)  //Formula para el OCR1A
+
+volatile unsigned char Flag_Send_Terminal = 0; //cada 2 segundos
+volatile unsigned char Flag_Transmition_Allowed = 0; 
+volatile unsigned char Flag_Reception_Detected = 0; 
 
 volatile unsigned int contDHT = 0;
 
+//Prototipo funciones privadas
+void updateTerminal();
+//-------------------------------//
+
 void SEOS_Dispatch_Tasks(){
-	if(Flag_DHT){
-		updateTerminal();
-		Flag_DHT = 0;
-	}
-
 	
+	if (Flag_Reception_Detected){	//se detecto una tecla presionada
+		UART_Reception_Detected();
+		Flag_Reception_Detected = 0;
+	}
+	if(Flag_Send_Terminal){			//pasaron 2 segundos
+		updateTerminal();
+		Flag_Send_Terminal = 0;
+	}
+	if (Flag_Transmition_Allowed){	//Buffer disponible para empezar a transmitir
+		UART_Transmition_Allowed();
+		Flag_Transmition_Allowed = 0;
+	}
 }
 
 
-ISR (TIMER1_COMPA_vect){ //cada medio segundo
-	SEOS_Scheduler_Tasks();
-}
 
 
 void SEOS_Scheduler_Tasks(){
-	contDHT++;
-	if (contDHT == CANT_INT_DHT){ //si el timer es de 0.5 segundos, a la 4 interrupcion llega a los 2 segundos
-		Flag_DHT = 1;
+	if (++contDHT == CANT_INT_DHT){ 
+		Flag_Send_Terminal = 1;
 		contDHT = 0;
 	}
 }
@@ -75,4 +91,18 @@ void updateTerminal(){
 }
 
 
+
+ISR (TIMER1_COMPA_vect){ //cada medio segundo
+	SEOS_Scheduler_Tasks();
+}
+// Manjeador de interrupciones de buffer vacio -> cuando interrumpe tiene que mandar mas datos para transmitir (asignar a UDR0)
+ISR(USART_UDRE_vect){ //Interrupcion de que se puede transmitir en la UART
+	Flag_Transmition_Allowed = 1;
+}
+
+//Manejo de interrupciones de lectura terminada
+ISR(USART_RX_vect){
+	Flag_Reception_Detected = 1;
+
+}
 
