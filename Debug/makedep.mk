@@ -4,15 +4,17 @@
 
 DHT11.c
 
+EventManager.c
+
 I2C.c
 
 main.c
 
 RTC.c
 
-SEOS.c
-
 serialPort.c
+
+TIMER.c
 
 UART.c
 

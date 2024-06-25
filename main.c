@@ -3,15 +3,14 @@
 
  
 int main(void) {
-    UART_init(0x67); // baud rate calculado para 9600 bps
+    UART_Init(0x67); // baud rate calculado para 9600 bps
     DHT11_Start();
     I2C_Init();
-    RTC_setup();
-	SEOS_Init_Timer();
-	
+    //RTC_setup();
+	TIMER_Init();
 	sei();
     while (1) {
-		SEOS_Dispatch_Tasks();
+		EventManager_Background();
     }
     return 0;
 }

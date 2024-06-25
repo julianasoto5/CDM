@@ -7,12 +7,12 @@
 #include <string.h>
 #include "RTC.h"
 #include "DHT11.h"
+#include "TIMER.h"
+#include "UART.h"
 
 
 //---------Prototipo de funciones Publicas-----------------
-
-void SEOS_Scheduler_Tasks();
-void SEOS_Init_Timer();
+void EventManager_Background();
 
 
 #endif

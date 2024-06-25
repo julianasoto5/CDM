@@ -16,6 +16,7 @@ void DHT11_Response(){
 	while(PINC & (1<<DHT11_PIN));		// La señal de respuesta del DHT11 empieza en bajo, por lo que espera a que la misma empiece
 	while((PINC & (1<<DHT11_PIN))==0);	// Mientras el bus este en nivel bajo, espera -> Mientras se esté transmitiendo la señal de respuesta espera (aprox 80 microsegundos)
 	while(PINC & (1<<DHT11_PIN));		// El DHT sube el nivel y lo mantiene por 80 us, despues empieza la transmision de datos.
+	//sale del while 
 }
 
 uint8_t DHT11_Read_byte(){
@@ -30,7 +31,8 @@ uint8_t DHT11_Read_byte(){
 		}
 		else{									//Si al salir del delay el bus vuelve a estar en BAJO, entonces pasaron los 26-28 microsegundos de ALTO que indicarian un 0
 			data = (data<<1);
-		}}
+		}
+	}
 	return data;
 }
 
@@ -58,7 +60,6 @@ uint8_t DHT11_Read_data(char* hum, char* temp){
 		sprintf(temp, "%2d.%1d",data[2],data[3]);
 		return 1;
 	}
-	else{
-		return 0;
-	}
+	return 0;
+	
 }
