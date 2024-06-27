@@ -26,7 +26,7 @@
     <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
     <ResetRule>0</ResetRule>
-    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <eraseonlaunchrule>7</eraseonlaunchrule>
     <EraseKey />
     <AsfFrameworkConfig>
       <framework-data xmlns="">
@@ -146,12 +146,22 @@
         <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
       </AvrGcc>
     </ToolchainSettings>
+    <UsesExternalMakeFile>False</UsesExternalMakeFile>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <BuildTarget>all</BuildTarget>
+    <CleanTarget>clean</CleanTarget>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DHT11.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="DHT11.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventManager.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="I2C.c">
@@ -175,16 +185,16 @@
     <Compile Include="RTC.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="SEOS.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="SEOS.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="serialPort.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="serialPort.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TIMER.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TIMER.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="UART.c">

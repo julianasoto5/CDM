@@ -7,7 +7,8 @@
 #include "UART.h"
 #include "DHT11.h"
 #include "I2C.h"
-#include "SEOS.h"
+#include "EventManager.h"
+#include "TIMER.h"
 
 
 #endif
