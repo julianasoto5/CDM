@@ -17,7 +17,7 @@ void I2C_Stop() {
 
 void I2C_Write(uint8_t data) {
     TWDR = data;
-    TWCR = (1<< TWINT) |(1<<TWEN);
+    TWCR = (1 << TWINT) |(1 << TWEN);
     while ((TWCR & (1 << TWINT)) == 0);
 }
 
