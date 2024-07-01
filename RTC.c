@@ -1,7 +1,7 @@
 
 #include "RTC.h"
 #include "I2C.h"
-#define DS3231_I2C_ADDRESS 0x68
+#define DS3232_I2C_ADDRESS 0x68
 
 uint8_t decToBcd(uint8_t val) {
     return ( (val/10*16) + (val%10) );
@@ -13,7 +13,7 @@ uint8_t bcdToDec(uint8_t val) {
 
 void RTC_setDateTime(uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
     I2C_Start();
-    I2C_Write((DS3231_I2C_ADDRESS << 1) | 0); // Dirección de escritura
+    I2C_Write((DS3232_I2C_ADDRESS << 1) | 0); // Dirección de escritura
     I2C_Write(0); // Comienza en la dirección 0x00
     I2C_Write(decToBcd(second));
     I2C_Write(decToBcd(minute));
@@ -27,11 +27,11 @@ void RTC_setDateTime(uint8_t year, uint8_t month, uint8_t day, uint8_t hour, uin
 
 void RTC_getDateTime(uint8_t *year, uint8_t *month, uint8_t *day, uint8_t *hour, uint8_t *minute, uint8_t *second) {
     I2C_Start();
-    I2C_Write((DS3231_I2C_ADDRESS << 1) | 0); // Dirección de escritura
+    I2C_Write((DS3232_I2C_ADDRESS << 1) | 0); // Dirección de escritura
     I2C_Write(0); // Comienza en la dirección 0x00
     I2C_Stop();
     I2C_Start();
-    I2C_Write((DS3231_I2C_ADDRESS << 1) | 1); // Dirección de lectura
+    I2C_Write((DS3232_I2C_ADDRESS << 1) | 1); // Dirección de lectura
     *second = bcdToDec(I2C_Read_ack());
     *minute = bcdToDec(I2C_Read_ack());
     *hour = bcdToDec(I2C_Read_ack());
