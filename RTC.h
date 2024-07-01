@@ -1,6 +1,6 @@
 #ifndef RTC_H
 #define RTC_H
-
+#define DS3232_I2C_ADDRESS 0x68
 #include <avr/io.h>
 #include "lib_delay.h"
 
