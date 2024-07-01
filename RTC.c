@@ -41,7 +41,3 @@ void RTC_getDateTime(uint8_t *year, uint8_t *month, uint8_t *day, uint8_t *hour,
     *year = bcdToDec(I2C_Read_nack());
     I2C_Stop();
 }
-
-void RTC_setup() {
-    RTC_setDateTime(24, 6, 24, 2, 24, 0); // Configuración inicial
-}
