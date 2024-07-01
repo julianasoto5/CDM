@@ -1,17 +1,9 @@
-//EVENT_MANAGER???
-#include "EventManager.h"
 
+#include "EventManager.h"
 
 volatile unsigned char Flag_Send_Terminal = 0; //cada 2 segundos
 volatile unsigned char Flag_Transmition_Allowed = 0; 
 volatile unsigned char Flag_Reception_Detected = 0; 
-
-
-/*Prototipo funciones privadas
-void Update_Terminal();
-void Reception_Detected();
-void Transmition_Allowed();
-//-------------------------------*/
 
 void EventManager_Background(){
 	if (Flag_Reception_Detected){	//se detecto una tecla presionada
