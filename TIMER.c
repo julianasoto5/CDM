@@ -1,7 +1,4 @@
 #include "TIMER.h"
-#define T 2
-#define PREESCALER 1024
-#define GET_OCR1A ((F_CPU*T/PREESCALER)-1)  //Formula para el OCR1A
 
 void TIMER_Init() {		  //Configuracion del Timer de 2s
 	TCCR1B |= (1 << WGM12);               // Configura el modo CTC (Clear Timer on Compare Match)
