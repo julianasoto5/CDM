@@ -1,7 +1,6 @@
 
 #include "RTC.h"
 #include "I2C.h"
-#define DS3232_I2C_ADDRESS 0x68
 
 uint8_t decToBcd(uint8_t val) {
     return ( (val/10*16) + (val%10) );
