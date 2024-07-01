@@ -4,9 +4,6 @@
 #include <avr/io.h>
 #include "lib_delay.h"
 
-//inicializar
-void RTC_setup();
-
 //transformacion de datos
 uint8_t decToBcd(uint8_t val);
 uint8_t bcdToDec(uint8_t val);
