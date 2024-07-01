@@ -18,17 +18,17 @@ void I2C_Stop() {
 void I2C_Write(uint8_t data) {
     TWDR = data;
     TWCR = (1<< TWINT) |(1<<TWEN);
-    while ((TWCR & (1 <<TWINT)) == 0);
+    while ((TWCR & (1 << TWINT)) == 0);
 }
 
 uint8_t I2C_Read_ack(void) {
-	TWCR = (1 << TWEN) | (1 << TWINT) | (1 << TWEA);
-	while (!(TWCR & (1 << TWINT)));
+	TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
+	while ((TWCR & (1 << TWINT)) == 0);
 	return TWDR;
 }
 
 uint8_t I2C_Read_nack(void) {
-	TWCR = (1 << TWEN) | (1 << TWINT);
-	while (!(TWCR & (1 << TWINT)));
+	TWCR = (1 << TWINT) | (1 << TWEN);
+	while ((TWCR & (1 << TWINT)) == 0);
 	return TWDR;
 }
