@@ -6,6 +6,7 @@
 #include "lib_delay.h"
 #include "UART.h"
 #include "DHT11.h"
+#include "RTC.h"
 #include "I2C.h"
 #include "EventManager.h"
 #include "TIMER.h"
