@@ -7,8 +7,8 @@ int main(void) {
     DHT11_Start();
     I2C_Init();
     RTC_setup();
-	TIMER_Init();
-	sei();
+    TIMER_Init();
+    sei();
     while (1) {
 		EventManager_Background();
     }
