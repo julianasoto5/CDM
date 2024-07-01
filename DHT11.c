@@ -1,7 +1,6 @@
 
 #include "DHT11.h"
 
-
 uint8_t data[5];
 void DHT11_Start(){
 	DDRC |= (1<<DHT11_PIN);				// Bus de salida para mandar la señal de inicio
